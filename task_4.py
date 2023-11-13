@@ -1,4 +1,5 @@
 import random
+import matplotlib.pyplot as mt
 
 
 class Weapon:
@@ -20,16 +21,27 @@ class Weapon:
 class Bow(Weapon):
     def special_attack(self, enemy, me):
         enemy.health -= self.damage * 2
+        if enemy.health <= 0:
+            enemy.alive = False
 
 
 class Sword(Weapon):
     def special_attack(self, enemy, me):
         me.defence = True
         enemy.health -= self.damage
+        if enemy.health <= 0:
+            enemy.alive = False
 
 
 class Warrior:
     def __init__(self, name: str, health: int, weapon):
+        while True:
+            new_id = random.randint(1, 500)
+            if new_id in ids:
+                new_id = random.randint(1, 500)
+            else:
+                break
+        self.id = new_id
         self.name = name
         self.health = health
         self.start_health = health
@@ -91,7 +103,7 @@ class Battle:
     def __init__(self, first, second: Warrior):
         self.warriors = [first, second]
         self.step = 0
-        self.wins = {first.name: 0, second.name: 0}
+        self.wins = []
 
     def battle_loop(self, amount_of_games=1):
         count = 0
@@ -138,11 +150,24 @@ class Battle:
                 elif step == 'Добавить оружие':
                     active_player.add_weapon(create_new_weapon())
                 if not inactive_player.is_alive():
-                    print(f'Победитель - {active_player.name}')
-                    self.wins[active_player.name] += 1
+                    print(f'Победитель - {active_player.name}\n\n')
+                    self.wins.append(active_player.id)
                     break
                 self.step = 1 if self.step == 2 else 2
             count += 1
+
+    def show_diagrams(self):
+        x = list(range(1, len(self.wins) + 1))
+        y = []
+        count = 0
+        for win in self.wins:
+            if win == warrior_1.id:
+                count += 1
+            y.append(count)
+        mt.xlabel('Игры')
+        mt.ylabel(self.warriors[0].name)
+        mt.plot(x, y, color='green', marker='o')
+        mt.show()
 
 
 def create_new_weapon():
@@ -165,8 +190,18 @@ def create_new_weapon():
                 return Sword(name, damage)
 
 
+ids = []
+
+
 if __name__ == '__main__':
-    warrior_1 = Warrior('Людвиг', 50, Bow('Зелёный лук', 6))
-    warrior_2 = Warrior('Даниил', 37, Sword('Огненный клинок', 10))
+    warrior_1 = Warrior('Людвиг', 1, Bow('Зелёный лук', 6))
+    warrior_2 = Warrior('Даниил', 1, Sword('Огненный клинок', 10))
     battle = Battle(warrior_1, warrior_2)
-    battle.battle_loop()
+    while True:
+        n = input('Введите количсетво битв:\n')
+        if n.isdigit():
+            n = int(n)
+            break
+        print('Это не число')
+    battle.battle_loop(n)
+    battle.show_diagrams()
