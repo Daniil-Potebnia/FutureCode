@@ -1,7 +1,22 @@
 import random
+from abc import ABC, abstractmethod
 
 
-class Warrior:
+class BaseWarrior(ABC):
+    @abstractmethod
+    def attack(self, enemy):
+        pass
+
+    @abstractmethod
+    def spec_attack(self, enemy):
+        pass
+
+    @abstractmethod
+    def protect(self):
+        pass
+
+
+class Warrior(BaseWarrior):
     def __init__(self, name, health, weapon, speed=5, armor=None, recharge=5):
         self.name = name
         self.health = health
@@ -69,7 +84,17 @@ class Mage(Warrior):
         return f"{self.name}-маг"
 
 
-class Weapon:
+class BaseWeapon(ABC):
+    @abstractmethod
+    def simple_attack(self, hero, enemy):
+        pass
+
+    @abstractmethod
+    def special_attack(self, hero, enemy):
+        pass
+
+
+class Weapon(BaseWeapon):
     def __init__(self, damage, spec_skill=None, add_crit=0):
         self.damage = damage
         self.spec_skill = spec_skill
